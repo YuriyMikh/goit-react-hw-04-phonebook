@@ -3,23 +3,17 @@ import { ContactForm } from 'components/ContactForm/ContactForm';
 import { ContactList } from './ContactList/ContactList';
 import { Filter } from './Filter/Filter';
 import { AppContainer } from './App.styled';
-import { save, load } from '../utils/local-storage';
+import { load } from '../utils/local-storage';
 
 const LOCALSTORAGE_KEY = 'contacts';
 
 export const App = () => {
-  const [contacts, setContacts] = useState([]);
+  const [contacts, setContacts] = useState(() => load(LOCALSTORAGE_KEY) ?? []); //сразу проверяем и записываем данные из localStorage в contacts
   const [filter, setFilter] = useState('');
 
-  //при первой загрузке проверяем localStorage, если что-то уже есть - записываем в contacts
+  //при перезаписи contacts записываем это в localStorage (пишем именно так, а не через save, чтобы не ругался линтер)
   useEffect(() => {
-    const data = load(LOCALSTORAGE_KEY) ?? [];
-    setContacts(data);
-  }, []);
-
-  //при перезаписи contacts записываем это в localStorage
-  useEffect(() => {
-    save(LOCALSTORAGE_KEY, contacts);
+    localStorage.setItem(LOCALSTORAGE_KEY, JSON.stringify(contacts));
   }, [contacts]);
 
   //функция принимает два параметра из компонента ContactForm
